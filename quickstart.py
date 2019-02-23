@@ -1,4 +1,5 @@
-# THIS CODE IS BORROWED FROM
+# THIS CODE IS BASED ON
+# https://github.com/gsuitedevs/python-samples/blob/master/gmail/quickstart/quickstart.py
 
 # Copyright 2018 Google LLC
 #
@@ -72,7 +73,9 @@ def send_message(service, user_id, message):
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--email_list', required=True)
-    parser.add_argument('--body_file_path', required=True)
+    parser.add_argument('--body', required=True)
+    parser.add_argument('--subject', required=True)
+    parser.add_argument('--no_send', action='store_true')
     args = parser.parse_args()
     return args
 
@@ -104,9 +107,10 @@ def main():
 
     args = parse_args()
 
-    message_subject = 'テスト from やわら'
+    with open(args.subject) as f:
+        message_subject = f.read()
 
-    with open(args.body_file_path) as f:
+    with open(args.body) as f:
         message_text = f.read()
 
     with open(args.email_list) as f:
@@ -114,7 +118,8 @@ def main():
             receiver = receiver.strip()
             print(receiver)
             message = create_message('me', receiver, message_subject, message_text)
-            #send_message(service, 'me', message)
+            if not args.no_send:
+                send_message(service, 'me', message)
 
 
 if __name__ == '__main__':
